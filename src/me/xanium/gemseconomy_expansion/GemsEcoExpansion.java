@@ -10,13 +10,14 @@ package me.xanium.gemseconomy_expansion;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.economy.Account;
-import me.xanium.gemseconomy.economy.AccountManager;
-import me.xanium.gemseconomy.economy.Currency;
+import me.xanium.gemseconomy.account.Account;
+import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 public class GemsEcoExpansion extends PlaceholderExpansion {
+
+    private GemsEconomy economy = null;
 
     @Override
     public boolean register() {
@@ -24,9 +25,9 @@ public class GemsEcoExpansion extends PlaceholderExpansion {
             return false;
         }
 
-        GemsEconomy gemsEconomy = (GemsEconomy) Bukkit.getPluginManager().getPlugin(this.getRequiredPlugin());
+        economy = (GemsEconomy) Bukkit.getPluginManager().getPlugin(this.getRequiredPlugin());
 
-        if (gemsEconomy == null) {
+        if (economy == null) {
             return false;
         }
 
@@ -50,7 +51,7 @@ public class GemsEcoExpansion extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "1.5";
+        return "1.6";
     }
 
     @Override
@@ -63,8 +64,9 @@ public class GemsEcoExpansion extends PlaceholderExpansion {
         if (player == null) {
             return "";
         }
-        Account a = AccountManager.getAccount(player.getUniqueId());
-        Currency dc = AccountManager.getDefaultCurrency();
+
+        Account a = this.economy.getAccountManager().getAccount(player.getUniqueId());
+        Currency dc = this.economy.getCurrencyManager().getDefaultCurrency();
         s = s.toLowerCase();
 
         if(s.equalsIgnoreCase("balance_default")){
@@ -76,7 +78,7 @@ public class GemsEcoExpansion extends PlaceholderExpansion {
 
         else if(s.startsWith("balance_") || !s.startsWith("balance_default")) {
             String[] currencyArray = s.split("_");
-            Currency c = AccountManager.getCurrency(currencyArray[1]);
+            Currency c = this.economy.getCurrencyManager().getCurrency(currencyArray[1]);
             if (s.equalsIgnoreCase("balance_" + currencyArray[1] + "_formatted")) {
                 return c.format(a.getBalance(c));
             } else {
